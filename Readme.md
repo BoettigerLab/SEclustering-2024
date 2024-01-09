@@ -12,3 +12,4 @@ https://github.com/BoettigerLab/ORCA-public
 https://github.com/MouseLand/cellpose
 
 The repository is organized into Scripts and Data.
+Data is available at Zenodo: 10.5281/zenodo.10472228

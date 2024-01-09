@@ -2,7 +2,7 @@
 
 Derek Le, Antonina Hafner, Sadhana Gaddam, Kevin Wang, Alistair Boettiger
 
-The data files are too large to be made directly available at Github and have been deposited at Zenodo. 
+The data files are too large to be made directly available at Github and have been deposited at Zenodo: 10.5281/zenodo.10472228 
 
 Software for processing the data is available in the associated github repository:  https://github.com/BoettigerLab/SEclustering-2024
 
@@ -13,3 +13,4 @@ This deposition currently includes
 2) Corrected_Data_Tables_by_FOV.zip -- contains drift corrected and chromatically corrected x,y,z coordinates and cellular barcode data to track cell type and coordinate barcode data to identify genomic sequences. 
 3) Processed_Seq_Data.zip -- re-processed sequencing based data used in this study.
 4) Precomputed_Analysis_Files.zip -- a collection of pre-computed data structures, used by the analysis scripts in our repository. These can be generated from the above image data and sequence data but are presented as processed, pre-computed files to save time. 
+5) FOF-CT_Spot_tables.zip -- draft versions of the 4DN FOF-CT formatted data-standard spot tables.  See data format description here: https://fish-omics-format.readthedocs.io/en/latest/ 
