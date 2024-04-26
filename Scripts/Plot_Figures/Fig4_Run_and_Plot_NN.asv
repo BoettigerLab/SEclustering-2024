@@ -7,6 +7,13 @@ chrTableHyb = readtable([saveFolder,'chrTableHyb_mm10_v2.xlsx']) ; % mm10
 seqScores =  readtable('U:\Manuscripts\SE Clustering Paper\Data\ForZenodo\Processed_Seq_Data\SE_TF-ChIPseq_SPRITE-speckle_DamID-LAD_scores.xlsx');
 load([saveFolder,'cpc6.mat'],'cpc6');
 
+xVars = {eclose, eWeight, seqScores.NANOG_normalized,seqScores.POU5F1_normalized,seqScores.SOX2_normalized,seqScores.Bingren_mESC_H3K27ac, pol2,med1,seqScores.LAD_score,seqScores.SPRITE_Speckle_score};
+xName = {'# SE <1Mb','weighted distance 1/\Sigma_i(d_i)','Nanog','Oct4','Sox2','H3K27ac','PolII','Med1','LAD','Speckle'}
+
+
+
+chipTable2.lad = lad_score;
+
 %% compute pairwise distance in kilobases (linear) between all SEs
 dis = chrTableHyb.chrNum*1e9 + chrTableHyb.start;
 disM = squareform(pdist([dis,dis]));
@@ -22,17 +29,21 @@ eWeight = nansum(1./disI,2);  % sum the 1/linear-distance to all other Es.
 %%
 rng default  % For reproducibility
     dTable = seqScores;
-    dTable = cat(1,dTable,dTable);
-    dTable.out = cpc6;
-    dTable(:,3) = []; % start and stop are redundant given the fixed 15kb size
+    dTable
         dTable = chipTable2(:,[1:2,11:end]);
         dTable.speckle = speckleSE;
         dTable.K27ac = chipTable{:,4};
         dTable.lad = lad_score;
+        % dTable.noise = rand(height(dTable),1);  
+        dTable = cat(1,dTable,dTable);
+        % dTable.cpc2 = cpc2; % replace with 750 unique values
         dTable.out = cpc6;
+        
         tbl = dTable;
+% tbl = tbl(1:376,:);
 
 saveName = [saveFolder,'net6Models_10node_LAD_good.mat'];
+
 if ~exist(saveName,'file')
     
     %% NN (single layer, 10 nodes)  - predict 600 nm contact
@@ -60,11 +71,12 @@ if ~exist(saveName,'file')
         
       %   figure(2); clf;
         names = {'All','Genome coord.','K27ac','O/S/N','Pol2/Med','Speckle/LAD'};
-        selCols ={[1:13], [1:2,13], [10,13], [3:5,13], [6:9,13],  [11:12,13]}; % select columns
+        selCols ={[1:13], [1:2,13], [12,13], [3:5,13], [6:9,13],  [10:11,13]}; % select columns
         S = length(selCols);
         for s=1:S
             sel = selCols{s};
-            netModel = fitcnet(trainTable(:,sel),'out','LayerSizes',10,'Standardize',true);  
+            % rng default  % For reproducibility
+            netModel = fitcnet(trainTable(:,sel),'out','LayerSizes',10,'Standardize',true); % 'ValidationData',valTable(:,sel), % doesn't return a predictor if passed a validation set, just some stats. 
             netData{r}{s} = {netModel,trainTable,testTable,idxTest,idxTrain};
             xTest = find(idxTest);
             xTrain = find(idxTrain);
@@ -86,6 +98,7 @@ if ~exist(saveName,'file')
         disp(['round ',num2str(r)]); pause(.01);
     end
     %%
+    % save([saveFolder,'net7Models_10node.mat'],'netData','netR','netE')
     save(saveName,'netData','netR','netE');
 else
     load(saveName,'netData','netR','netE');

@@ -1,11 +1,19 @@
 %% Fig4 Correlation Analysis
 
-% load correlates
-saveFolder = 'U:\Manuscripts\SE Clustering Paper\Data\';
+% cpc6, cpc2, chrTableHyb, 
+ saveFolder = 'U:\Manuscripts\SE Clustering Paper\Data\';
+
 chrTableHyb = readtable([saveFolder,'chrTableHyb_mm10_v2.xlsx']) ; % mm10  
-seqScores =  readtable('U:\Manuscripts\SE Clustering Paper\Data\ForZenodo\Processed_Seq_Data\SE_TF-ChIPseq_SPRITE-speckle_DamID-LAD_scores.xlsx');
+
+
+chipTable = readtable([saveFolder,'chipTable1_good.xlsx']);
+chipTable2 = readtable([saveFolder,'chipTable2_good.xlsx']);
+chipTable2 = chipTable2(1:376,:); % (remove extra row usm at bottom)
+load([saveFolder,'speckleSE_good.mat'],'speckleSE');
+load([saveFolder,'LADscore.mat'],'lad_score');
 load([saveFolder,'cpc6.mat'],'cpc6');
 
+chipTable2.lad = lad_score;
 
 
 %% compute pairwise distance in kilobases (linear) between all SEs
@@ -48,7 +56,7 @@ set(gca,'color','w')
 colormap(flipud(GetColorMap('blue'))); colorbar;
 set(gca,'color',[.9,.9,.9])
 %% combine in table 
-dTable1 = seqScores;
+dTable1 = chipTable;
 dTable1.eWeight = eWeight;
 dTable1.eclose = eclose;
 dTable1.speckle = speckleSE;
@@ -57,10 +65,12 @@ dTable1.speckle = speckleSE;
 
 
 %% plot correlates
-pol2 = mean([seqScores.PolII_r1_normalized,seqScores.PolII_r1_normalized],2);
-med1 = mean([seqScores.med1_r1_normalized,seqScores.med1_r1_normalized],2);
+pol2 = mean([chipTable2.PolII_r1_normalized,chipTable2.PolII_r1_normalized],2);
+med1 = mean([chipTable2.med1_r1_normalized,chipTable2.med1_r1_normalized],2);
 figure(4); clf;
-xVars = {eclose, eWeight, seqScores.NANOG_normalized,seqScores.POU5F1_normalized,seqScores.SOX2_normalized,seqScores.Bingren_mESC_H3K27ac, pol2,med1,seqScores.LAD_score,seqScores.SPRITE_Speckle_score};
+% xVars = {eclose, eWeight, chipTable2.NANOG_normalized,chipTable2.POU5F1_normalized,chipTable2.SOX2_normalized,speckleSE,chipTable2.PolII_r1_normalized,chipTable2.PolII_r2_normalized,chipTable.Bingren_mESC_H3K27ac_r1,chipTable2.med1_r1_normalized,chipTable2.med1_r2_normalized,chipTable2.lad};
+% xName = {'# SE <1Mb','weighted distance 1/\Sigma_i(d_i)','Nanog','Oct4','Sox2','Speckle','PolII','PolII r2','H3K27ac','Med1','Med1 r2','LAD'}
+xVars = {eclose, eWeight, chipTable2.NANOG_normalized,chipTable2.POU5F1_normalized,chipTable2.SOX2_normalized,chipTable.Bingren_mESC_H3K27ac_r1, pol2,med1,chipTable2.lad,speckleSE};
 xName = {'# SE <1Mb','weighted distance 1/\Sigma_i(d_i)','Nanog','Oct4','Sox2','H3K27ac','PolII','Med1','LAD','Speckle'}
 
 cmap = flipud(gray(10))*.8; % flipud(GetColorMap('redToWhiteK',10));
@@ -88,6 +98,9 @@ for x=1:length(xVars) % x=6
     title(['  r=',num2str(c1,2),' p=',num2str(p1,2)]);
     pause(.1);
 end
+% colormap('jet')
+% colormap(flipud(colormap('parula')))
+% colormap('copper')
 
 %% 
 clrs = [.5 0 1; 
@@ -104,9 +117,8 @@ clrs = [.5 0 1;
 
 figure(5); clf;
 figure(4); clf;
-xVars = {eclose, eWeight, seqScores.NANOG_normalized,seqScores.POU5F1_normalized,seqScores.SOX2_normalized,seqScores.Bingren_mESC_H3K27ac, pol2,med1,seqScores.LAD_score,seqScores.SPRITE_Speckle_score};
-xName = {'# SE <1Mb','weighted distance 1/\Sigma_i(d_i)','Nanog','Oct4','Sox2','H3K27ac','PolII','Med1','LAD','Speckle'}
-
+xVars = {eclose, eWeight, chipTable2.NANOG_normalized,chipTable2.POU5F1_normalized,chipTable2.SOX2_normalized,speckleSE,chipTable2.PolII_r1_normalized,chipTable2.PolII_r2_normalized,chipTable.Bingren_mESC_H3K27ac_r1,chipTable2.med1_r1_normalized,chipTable2.med1_r2_normalized};
+xName = {'# SE <1Mb','weighted distance 1/\Sigma_i(d_i)','Nanog','Oct4','Sox2','Speckle','PolII','PolII r2','H3K27ac','Med1','Med1 r2'}
 rp = zeros(12,2);
 for x=1:length(xVars) % x=6
    

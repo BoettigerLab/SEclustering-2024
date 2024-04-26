@@ -3,12 +3,17 @@
 % Run Process_Data_Tables_To_Matrices first 
 
 
-
 %% gene names
 nearestGene = chrTableHyb.Yo_gene;
 nearestAllele = [nearestGene; nearestGene];
 find(StringFind(nearestGene,'Sox2','boolean',true))
-idx_pp = contains(nearestGene,{'Sox2','Mycn','Tbx3','Pou5f1','Pvt1','Nanog','Prdm14'});
+
+
+% idx_pp = contains(nearestGene,{'Sox2','Mycn','Tbx3','Pou5f1','Pvt1','Nanog','Prdm14'});
+%   gene names to display
+show_genes = [74:76,133:137,242:245] ; % Sox2, Nanog, Mycn SEs + 1 downstream control
+idx_pp = false(length(nearestGene),1);
+idx_pp(show_genes) = true;
 
 %%
 cFrac = cFrac2; % 200 nm cutoff 

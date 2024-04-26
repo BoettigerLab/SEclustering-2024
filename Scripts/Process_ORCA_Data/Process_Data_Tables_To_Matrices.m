@@ -11,22 +11,16 @@
 names = {'EpiLC-JB','mESC-E14','NPC-JB','mESC-JB'};
 % EpiLC=2223, mESC-E14=10733, NPC-JB=1888, mESC-JB=4097
 
-
-mm10cs = readtable('U:\Manuscripts\SE Clustering Paper\Data\SE_SHERLOCK_20230522\SE_L10_chr_mm10_updated_sorted.bed.txt')
-saveFolder = 'U:\Manuscripts\SE Clustering Paper\Data\';
-
-
+saveFolder = 'U:\Manuscripts\SE Clustering Paper\Data\ForZenodo\Precomputed_Analysis_Files\'
+analysisFolder = 'U:\Manuscripts\SE Clustering Paper\Data\ForZenodo\Corrected_Data_Tables_by_FOV\'
 %% Load the data 
 % this part is slow
 % sort it into single cell distance maps and individual polymers
-
-NAS02_Vol4 = 'N:\';
-
 tic
-analysisFolder = [NAS02_Vol4,'Derek\20210722_L10_SE_MultiplexedCells\Analysis_CT4_v15_alt-copy\'];
+
 datTables = FindFiles([analysisFolder,'FOV*_CorrChromDriftGrp.csv']);
 nFOV = length(datTables);
-chrTableHyb = readtable([saveFolder,'chrTableHyb_mm10.csv']) ; % mm10  
+chrTableHyb = readtable([saveFolder,'SuperEnhancerLoci.xlsx']) ; % mm10   
 
 % faster to  load 1-fov at a time
 %   indexing out of a crazy massive table is unnecessarily slow
@@ -111,28 +105,23 @@ cFrac = cFrac2; % 200 nm cutoff
 meanObs = nanmean(nObs{2});
 meanObs = meanObs(1:376);  % validated already the two halves are identical in badhybes  
 bH = [209:212 ,find(meanObs < .5*max(meanObs))];  % 209:212 had an error in the barcode updates  
-bH = [bH, 48, 337]; % this pair is also stripey,
+bH = [bH, 48, 337]; % 
 bH = [bH,bH+376];
 % these bad hybes have low detection efficiency and often as not record
 % noise instead of true signal. To avoid the resulting confusion, we simply
 % exclude these SE from furtehr analysis. 
-
-% some cross-reactive hybes - these ones don't give stripes, just a
-% peculiar off-diagonal network of dots. We'll drop these from the analysis. 
 cxr = [91,213,231,257,291,296,333]; 
 cxr = [cxr,cxr+376]; % both alleles;
+%  remove bad hybes from single cell data
 
-
-%%  remove bad hybes from single cell data
-
-g = 2;
+g = 2; % take just the E14 cells
 esMap = distMapCell{g};
 esMap(bH,:,:) = nan;
 esMap(:,bH,:) = nan;
 % remove cross reactive hybes, but not on main diagonal 
 idx = sub2ind([2*376,2*376],cxr,cxr);
 nC = size(esMap,3);
-for c=1:nC  % there must be a more elegant way to do this, but I've not the time 
+for c=1:nC  
     temp = esMap(:,:,c);
     temp(cxr,cxr) = nan;
     temp(idx) = 0;
