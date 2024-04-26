@@ -8,8 +8,8 @@ The manuscript is currently in preparation -- once it is posted on BioRxiv, it w
 
 This repository is dependent upon functions provided in our other repositories, as well as publically available functions.
 These include:  
-https://github.com/BoettigerLab/ORCA-public
-https://github.com/MouseLand/cellpose
+* https://github.com/BoettigerLab/ORCA-public
+* https://github.com/MouseLand/cellpose
 
 The repository is organized into Scripts and Data.
 Data is available at Zenodo: 10.5281/zenodo.10472228
